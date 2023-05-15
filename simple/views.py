@@ -9,7 +9,7 @@ import threading
 
 from modules.processing import StableDiffusionProcessingTxt2Img, StableDiffusionProcessingImg2Img, process_images
 from modules.api.api import encode_pil_to_base64_str
-from modules import shared, sd_models
+import modules
 
 # Create your views here.
 

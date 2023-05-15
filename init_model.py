@@ -22,7 +22,7 @@ if ".dev" in torch.__version__ or "+git" in torch.__version__:
     torch.__long_version__ = torch.__version__
     torch.__version__ = re.search(r'[\d.]+[\d]', torch.__version__).group(0)
 
-from modules import shared, devices, ui_tempdir
+from modules import shared, devices, ui_tempdir, extensions
 import modules.codeformer_model as codeformer
 import modules.face_restoration
 import modules.gfpgan_model as gfpgan
@@ -43,12 +43,13 @@ import modules.ui
 from modules import modelloader
 from modules.shared import cmd_opts
 import modules.hypernetworks.hypernetwork
+from modules import extra_networks, extra_networks_hypernet
 
 
 def initialize():
     # check_versions()
 
-    # extensions.list_extensions()
+    extensions.list_extensions()
     # localization.list_localizations(cmd_opts.localizations_dir)
 
     # if cmd_opts.ui_debug_mode:
@@ -62,7 +63,7 @@ def initialize():
     gfpgan.setup_model(cmd_opts.gfpgan_models_path)
 
     modelloader.list_builtin_upscalers()
-    # modules.scripts.load_scripts()
+    modules.scripts.load_scripts()
     modelloader.load_upscalers()
 
     modules.sd_vae.refresh_vae_list()
@@ -84,15 +85,16 @@ def initialize():
     shared.opts.onchange("sd_vae_as_default", wrap_queued_call(lambda: modules.sd_vae.reload_vae_weights()), call=False)
     shared.opts.onchange("temp_dir", ui_tempdir.on_tmpdir_changed)
 
-    # shared.reload_hypernetworks()
+    shared.reload_hypernetworks()
 
     # ui_extra_networks.intialize()
     # ui_extra_networks.register_page(ui_extra_networks_textual_inversion.ExtraNetworksPageTextualInversion())
     # ui_extra_networks.register_page(ui_extra_networks_hypernets.ExtraNetworksPageHypernetworks())
     # ui_extra_networks.register_page(ui_extra_networks_checkpoints.ExtraNetworksPageCheckpoints())
 
-    # extra_networks.initialize()
-    # extra_networks.register_extra_network(extra_networks_hypernet.ExtraNetworkHypernet())
+    extra_networks.initialize()
+    extra_networks.register_extra_network(extra_networks_hypernet.ExtraNetworkHypernet())
+    modules.script_callbacks.before_ui_callback()
 
     # if cmd_opts.tls_keyfile is not None and cmd_opts.tls_keyfile is not None:
 
